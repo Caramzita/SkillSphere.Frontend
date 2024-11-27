@@ -1,14 +1,17 @@
-import { createStore } from 'vuex'
+import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../views/Home.vue';
 
-export default createStore({
-  state: {
+const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
   },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
-})
+];
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
