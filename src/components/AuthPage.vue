@@ -63,6 +63,8 @@ export default {
           storage.setItem('refreshToken', refreshToken);
           storage.setItem('refreshTokenExpiration', refreshTokenExpiration);
 
+          await this.$store.dispatch('fetchCurrentUser');
+
           this.$router.push('/profile-setup');
         }
       } catch (error) {
