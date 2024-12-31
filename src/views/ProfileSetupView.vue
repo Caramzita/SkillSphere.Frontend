@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import StepBasicInfo from './forms/profile-steps/StepBasicInfo.vue';
-import StepSkills from './forms/profile-steps/StepSkills.vue';
-import StepOptionalInfo from './forms/profile-steps/StepOptionalInfo.vue';
-import StepTracker from "./StepTracker.vue";
+import StepBasicInfo from '@/components/forms/profile-steps/StepBasicInfo.vue';
+import StepSkills from '@/components/forms/profile-steps/StepSkills.vue';
+import StepOptionalInfo from '@/components/forms/profile-steps/StepOptionalInfo.vue';
+import StepTracker from '@/components/StepTracker.vue';
 
 export default {
   components: {

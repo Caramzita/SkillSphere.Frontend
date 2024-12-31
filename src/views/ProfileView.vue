@@ -5,7 +5,7 @@
       <div v-if="loading" class="text-center">
         <p class="text-lg font-medium text-gray-500">Loading...</p>
       </div>
-      <div v-else class="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
+      <div v-else class="bg-white rounded-lg p-6 dark:bg-gray-800">
         <!-- Контейнер для разделения на 2 колонки -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Левая колонка: Основная информация -->
@@ -24,38 +24,34 @@
                 <p class="mt-1 text-gray-600 dark:text-gray-400">
                   {{ userProfile.bio }}
                 </p>
+                <!-- Кнопка редактирования -->
+                <div v-if="isCurrentUser">
+                  <button
+                    @click="showModal = true"
+                    class="px-3 py-1 text-white bg-primary-600 hover:bg-primary-700 rounded-lg mt-3"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
               </div>
-            </div>
+            </div> 
             <!-- Список навыков -->
-            <div>
-              <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                Skills
-              </h2>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <span
-                  v-for="skill in userProfile.skills"
-                  :key="skill.id"
-                  class="px-3 py-1 bg-primary-100 dark:bg-primary-700 text-primary-700 dark:text-white text-sm rounded-full"
-                >
-                  {{ skill.skillName }}
-                </span>
-              </div>
-            </div>
+            <SkillsSection
+              :initialSkills="userProfile.skills" 
+              :visible="isCurrentUser"
+            />
             <!-- Список целей -->
-            <GoalsSection :initialGoals="userProfile.goals" />
-            <!-- Кнопка редактирования -->
-            <div v-if="isCurrentUser">
-              <button
-                @click="showModal = true"
-                class="px-4 py-2 text-white bg-primary-600 hover:bg-primary-700 rounded-lg"
-              >
-                Edit Profile
-              </button>
-            </div>
+            <LearningHistorySection 
+              :initialHistory="userProfile.learningHistories" 
+              :visible="isCurrentUser"
+            />  
           </div>
           <!-- Правая колонка: История обучения -->
-          <div class="overflow-y-auto">
-            <LearningHistorySection :initialHistory="userProfile.learningHistories" />
+          <div class="overflow-y-auto mt-2">
+            <GoalsSection 
+              :initialGoals="userProfile.goals" 
+              :visible="isCurrentUser"
+            />
           </div>
         </div>
       </div>
@@ -74,19 +70,21 @@
   
 <script>
 import { createAxiosInstance } from "@/services/axiosInstance";
-import AppHeader from "./AppHeader.vue";
-import EditProfileModal from "./EditProfileModal.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import EditProfileModal from "@/components/profile/modals/EditProfileModal.vue";
 import { mapGetters } from 'vuex';
 import { handleError } from '@/services/errorHandler';
-import GoalsSection from "./GoalsSection.vue";
-import LearningHistorySection from "./LearningHistorySection.vue";
+import GoalsSection from "@/components/profile/GoalsSection.vue";
+import LearningHistorySection from "@/components/profile/LearningHistorySection.vue";
+import SkillsSection from "@/components/profile/SkillsSection.vue";
 
 export default {
   components: {
     AppHeader,
     EditProfileModal,
     GoalsSection,
-    LearningHistorySection
+    LearningHistorySection,
+    SkillsSection
   },
   props: ["userId"],
   data() {

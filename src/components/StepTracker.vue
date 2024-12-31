@@ -35,10 +35,6 @@
           </span>
           <span>{{ step }}</span>
         </span>
-        <div
-          v-if="index < steps.length - 1"
-          class="flex-1 h-px bg-gray-200 dark:bg-gray-700 mx-4"
-        ></div>
       </li>
     </ol>
 </template>

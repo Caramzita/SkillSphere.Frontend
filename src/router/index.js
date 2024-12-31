@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AuthPage from '@/components/AuthPage.vue';
-import HomePage from '@/components/HomePage.vue';
-import ProfileSetup from '@/components/ProfileSetup.vue';
+import AuthPage from '@/views/AuthView.vue';
+import HomePage from '@/views/HomeView.vue';
+import ProfileSetup from '@/views/ProfileSetupView.vue';
 import { refreshTokens } from '@/services/authService';
-import ProfileView from '@/components/ProfileView.vue';
+import ProfileView from '@/views/ProfileView.vue';
 import store from '@/store/store';
 
 const routes = [

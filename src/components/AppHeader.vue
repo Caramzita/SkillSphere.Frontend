@@ -8,8 +8,8 @@
       </div>
       
       <div class="flex items-center">
-        <div class="flex items-center gap-4">
-          <UserCard :user="currentUser" />
+        <div class="flex items-center gap-4 " v-if="currentUser">
+          <UserCard :userId="currentUser.userId" />
         </div>
         <button
           class="px-5 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 
@@ -25,7 +25,7 @@
   </template>
   
   <script>
-  import UserCard from "@/components/UserCard";
+  import UserCard from './profile/UserCard.vue';
   import { mapGetters } from 'vuex';
   
   export default {

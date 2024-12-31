@@ -1,5 +1,5 @@
 <template>
-  <SignIn
+  <SignInForm
     v-if="isActive"
     :formData="formData"
     :isActive="isActive"
@@ -18,13 +18,13 @@
 </template>
 
 <script>
-import SignIn from './forms/auth/SignInForm.vue';
-import CreateAccountForm from './forms/auth/CreateAccountForm.vue';
+import SignInForm from '@/components/forms/auth/SignInForm.vue';
+import CreateAccountForm from '@/components/forms/auth/CreateAccountForm.vue';
 import { handleError } from '@/services/errorHandler';
 import { createAxiosInstance } from '@/services/axiosInstance';
 
 export default {
-  components: { SignIn, CreateAccountForm },
+  components: { SignInForm, CreateAccountForm },
   data() {
     return {
       isActive: true,
