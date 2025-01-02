@@ -1,27 +1,26 @@
 <template>
-    <div class="flex justify-between items-center">
-          <h1 class="text-2xl font-bold dark:text-white">Posts</h1>
-          <button
-            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-            @click="showModal = true"
-          >
-            + Add Post
-          </button>
-        </div>
-        <div v-if="loading" class="loading">Loading posts...</div>
-        <div v-else>
-          <PostCard
-            v-for="post in posts"
-            :key="post.id"
-            :postData="post"
-          />
-        </div>
+    <div class="flex justify-end">
+      <button
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+        @click="showModal = true"
+      >
+        + Add Post
+      </button>
+    </div>
+    <div v-if="loading" class="loading">Loading posts...</div>
+    <div v-else>
+      <PostCard
+        v-for="post in posts"
+        :key="post.id"
+        :postData="post"
+      />
+    </div>
 
-        <PostModal
-          :isVisible="showModal"
-          @close="showModal = false"
-          @submit="addPost"
-        />
+    <PostModal
+      :isVisible="showModal"
+      @close="showModal = false"
+      @submit="addPost"
+    />
 </template>
 
 <script>
@@ -89,7 +88,7 @@ export default {
 
         try {
             const response = await axiosInstancePosts.post("/posts", newPost, {
-            headers: { Authorization: `Bearer ${accessToken}` },
+              headers: { Authorization: `Bearer ${accessToken}` },
             });
 
             const createdPost = response.data;
@@ -97,9 +96,21 @@ export default {
             const goalId = createdPost.goalId;
             const skillIds = createdPost.skillIds || [];
 
-            const goal = goalId
-            ? await axiosInstanceProfileInfo.get(`/users/profile/goals/${goalId}`).then(res => res.data)
-            : null;
+            let goal = null;
+            if (goalId) {
+              goal = await axiosInstanceProfileInfo
+              .get(`/users/profile/goals/${goalId}`)
+              .then(res => res.data);
+
+              if (goal.progress === 'NotStarted') {
+                await axiosInstanceProfileInfo.patch(`/users/profile/goals/${goalId}`, 
+                  { progress: 'InProgress' },
+                  { headers: { Authorization: `Bearer ${accessToken}` } }
+                );
+
+                goal.progress = 'InProgress';
+              }
+            }
 
             let skills = [];
             if (skillIds.length > 0) {
@@ -108,16 +119,36 @@ export default {
             }
 
             this.posts.unshift({
-            ...createdPost,
-            goal,
-            skills,
+              ...createdPost,
+              goal,
+              skills,
             });
         } catch (error) {
             console.error("Ошибка добавления поста:", error);
         } finally {
             this.showModal = false;
         }
-    }
+    },
   },
 }
 </script>
+
+<style>
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #837d7d;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+  }
+</style>

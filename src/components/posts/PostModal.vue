@@ -144,6 +144,7 @@ export default {
         goalId: null,
         skillIds: [],
       };
+      this.selectedSkills = [];
     },
     async loadGoals() {
       const axiosInstance = createAxiosInstance(8084);

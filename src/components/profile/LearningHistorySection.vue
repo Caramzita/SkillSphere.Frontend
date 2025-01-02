@@ -123,6 +123,7 @@ export default {
 
         if (response.status === 200){
           this.history.push(response.data);
+          this.errors = [];
           this.showModal();
         }
       } catch (error) {
