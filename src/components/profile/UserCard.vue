@@ -2,7 +2,7 @@
   <router-link
     v-if="linkToProfile && user"
     :to="`/profile/${user.userId}`"
-    class="flex items-center gap-4 transition-colors duration-200 relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+    class="flex items-center gap-2 transition-colors duration-200 relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
   >
     <img
       :src="user.profilePictureUrl || defaultAvatar"

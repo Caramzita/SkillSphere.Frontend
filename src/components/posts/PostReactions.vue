@@ -12,13 +12,9 @@
                 viewBox="0 0 24 24" 
                 xmlns="http://www.w3.org/2000/svg"
                 :style="{ opacity: isLiked || likes > 0 ? 1 : 0.5 }">
-                <path
-                    d="M16 4a5.95 5.95 0 0 0-3.89 1.7l-.12.11-.12-.11A5.96 5.96 0 0 0 7.73 4 5.73 5.73 0 
-                    0 0 2 9.72c0 3.08 1.13 4.55 6.18 8.54l2.69 2.1c.66.52 1.6.52 2.26 0l2.36-1.84.94-.74c4.53-3.64 
-                    5.57-5.1 5.57-8.06A5.73 5.73 0 0 0 16.27 4zm.27 1.8a3.93 3.93 0 0 1 3.93 3.92v.3c-.08 2.15-1.07 
-                    3.33-5.51 6.84l-2.67 2.08a.04.04 0 0 1-.04 0L9.6 17.1l-.87-.7C4.6 13.1 3.8 11.98 3.8 9.73A3.93 
-                    3.93 0 0 1 7.73 5.8c1.34 0 2.51.62 3.57 1.92a.9.9 0 0 0 1.4-.01c1.04-1.3 2.2-1.91 3.57-1.91z" 
-                />
+                <path xmlns="http://www.w3.org/2000/svg" d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 
+                    12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z" 
+                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>{{ likes }}</span>
         </button>
@@ -35,12 +31,14 @@
                 viewBox="0 0 24 24" 
                 xmlns="http://www.w3.org/2000/svg"
                 :style="{ opacity: isDisliked || dislikes > 0 ? 1 : 0.5 }">
-                <g>
-                    <path 
-                    d="M2.808 1.393l18.384 18.385-1.414 1.414-3.747-3.747L12 21.485 3.52 12.993c-2.04-2.284-2.028-5.753.034-8.023L1.393 
-                    2.808l1.415-1.415zm17.435 3.364c2.262 2.268 2.34 5.88.236 8.236l-1.635 1.636L7.26 3.046c1.67-.207 3.408.288 4.741 
-                    1.483 2.349-2.109 5.979-2.039 8.242.228z" />
-                </g>     
+                <path xmlns="http://www.w3.org/2000/svg" 
+                    d="M12 6.00011L14 8.00011L10 10.0001L13 13.0001M12 6.00011C10.2006 3.90309 7.19377 
+                    3.25515 4.93923 5.17539C2.68468 7.09563 2.36727 10.3062 4.13778 12.5772C5.60984 14.4655 
+                    10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9816C11.9483 
+                    20.0063 12.0393 20.0063 12.1225 19.9816C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 
+                    18.4479 18.3778 14.4655 19.8499 12.5772C21.6204 10.3062 21.3417 7.07543 19.0484 5.17539C16.7551 
+                    3.27535 13.7994 3.90309 12 6.00011Z" 
+                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>    
             </svg>
             <span>{{ dislikes }}</span>
         </button>
@@ -58,7 +56,7 @@ export default {
     name: 'PostReactions',
     props: {
         postId: {
-            type: Number,
+            type: String,
             required: true
         }
     },
@@ -114,15 +112,8 @@ export default {
                 }
                 return response.json();
             })
-            .then(data => {
-                console.log('Reaction sent:', data);
-            })
-            .catch(error => {
-                console.error('Error sending reaction:', error);
-            });
         },
         fetchReactions() {
-            console.log(`Fetching reactions for post ${this.postId}`);
             this.likes = Math.floor(Math.random() * 100); // Пример
             this.dislikes = Math.floor(Math.random() * 50); // Пример
             this.commentsCount = Math.floor(Math.random() * 20); // Пример

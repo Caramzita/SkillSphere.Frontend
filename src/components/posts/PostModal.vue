@@ -9,7 +9,7 @@
               Create New Post
             </h3>
             <button
-            @click.prevent="$emit('close')"
+            @click.prevent="closeModal"
             class="text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
             <svg
@@ -30,21 +30,24 @@
         </div>
 
         <div class="p-4 md:p-5">
-          <label class="block text-sm font-medium dark:text-gray-300 mb-2">
-            Select a Goal
-          </label>
-          <select
-            v-model="post.goalId"
-            class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white mb-4"
-          >
-            <option
-              v-for="goal in goals"
-              :key="goal.id"
-              :value="goal.id"
+          <div v-if="goals.length > 0">
+            <label class="block text-sm font-medium dark:text-gray-300 mb-2">
+              Select a Goal
+            </label>
+            <select
+              v-model="post.goalId"
+              class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white mb-4"
             >
-              {{ goal.title }}
-            </option>
-          </select>
+              <option
+                v-for="goal in goals"
+                :key="goal.id"
+                :value="goal.id"
+              >
+                {{ goal.title }}
+              </option>
+            </select>
+          </div>
+          
 
           <label class="block text-sm font-medium dark:text-gray-300 mb-2">
             Content
@@ -52,11 +55,12 @@
           <textarea
             v-model="post.content"
             rows="4"
-            class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white"
+            class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white max-h-[350px] resize-y"
             placeholder="Write your post content..."
           ></textarea>
+          <p v-if="errors.content" class="text-red-600 text-m pl-1">{{ errors.content }}</p>
 
-          <label class="block text-sm font-medium dark:text-gray-300 mb-2">
+          <label class="block text-sm font-medium dark:text-gray-300 mb-2 mt-2">
             Select Skills
           </label>
           <div class="mt-2 flex flex-wrap gap-2">
@@ -68,7 +72,7 @@
                 'bg-blue-600 text-white': selectedSkills.includes(skill.id),
                 'bg-gray-200 dark:bg-gray-600 dark:text-gray-100': !selectedSkills.includes(skill.id),
                 }"
-                class="px-4 py-2 rounded-full text-sm font-medium transition duration-200 ease-in-out hover:bg-blue-500 hover:text-white"
+                class="px-4 py-1 rounded-full text-sm font-medium transition duration-200 ease-in-out hover:bg-blue-500 hover:text-white"
             >
                 {{ skill.name }}
             </button>
@@ -77,17 +81,10 @@
           <div class="flex justify-end gap-2 mt-4">
             <button
               type="button"
-              class="px-4 py-2 bg-gray-300 rounded-lg dark:bg-gray-600"
-              @click="closeModal"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
               class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
               @click="submitPost"
             >
-              Submit
+              Create
             </button>
           </div>
         </div>    
@@ -104,6 +101,10 @@ export default {
     isVisible: {
       type: Boolean,
       required: true,
+    },
+    errors: {
+      type: Object,
+      default: () => ({})
     },
   },
   data() {
@@ -135,7 +136,10 @@ export default {
     submitPost() {
       this.post.skillIds = this.selectedSkills;
       this.$emit('submit', this.post);
-      this.closeModal();
+
+      if (Object.keys(this.errors).length === 0) {
+        this.resetForm();
+      }
     },
     resetForm() {
       this.post = {
@@ -156,8 +160,6 @@ export default {
             Authorization: `Bearer ${accessToken}` 
           },
         });
-
-        console.log (response.data);
         
         this.goals = response.data.map((goal) => ({
           id: goal.id,

@@ -41,7 +41,6 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const currentUser = store.getters.currentUser;
-    console.log('Data', currentUser);
 
     if (currentUser != null) {
       switch (to.name) {

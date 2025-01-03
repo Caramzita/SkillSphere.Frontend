@@ -122,6 +122,7 @@ export default {
   methods: {
     showModal() {
       this.isVisible = !this.isVisible;
+      this.errors = [];
     },
     async saveGoal(newGoal) {
       const axiosInstance = createAxiosInstance(8084);
