@@ -6,7 +6,7 @@
       <div v-if="postData.userId === currentUserId" class="flex items-center absolute top-2 right-2 space-x-2">
         <button
           class="text-blue-600 hover:text-blue-700 focus:outline-none"
-          @click="openEditModal"
+          @click="$emit('edit', postData)"
         >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
            <path xmlns="http://www.w3.org/2000/svg" d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 
@@ -46,8 +46,8 @@
       <h3 class="text-lg font-bold dark:text-white">
         {{ postData.goal?.title }}
       </h3>
-      <p v-if="postData.goal?.progress" class="text-lg text-gray-500 dark:text-gray-400">
-        - {{ goalStatus[postData.goal?.progress].text }}
+      <p v-if="postData.goal?.progress" class="text-sm text-gray-500 dark:text-gray-400 relative" style="top: 0.15em;">
+        ({{ goalStatus[postData.goal?.progress].text }})
       </p>
     </div>
 
@@ -69,7 +69,7 @@
     </div>
 
     <div class="border-b border-gray-600 mb-4"></div>
-    
+
     <!-- Кнопки реакций -->
     <PostReactions :postId="postData.id" />
   </div>
@@ -95,7 +95,7 @@ export default {
   components: {
     UserCard,
     PostReactions,
-    ConfirmModal
+    ConfirmModal,
   },
   data () {
     return {

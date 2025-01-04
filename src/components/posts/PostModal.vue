@@ -60,7 +60,19 @@
           ></textarea>
           <p v-if="errors.content" class="text-red-600 text-m pl-1">{{ errors.content }}</p>
 
-          <label class="block text-sm font-medium dark:text-gray-300 mb-2 mt-2">
+          <div class="mt-2">
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              v-model="post.isCompleteGoal"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 
+              dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <span class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Mark Goal as Complete</span>
+          </label>
+        </div>
+
+          <label class="block text-sm font-medium dark:text-gray-300 mb-2 mt-3">
             Select Skills
           </label>
           <div class="mt-2 flex flex-wrap gap-2">
@@ -93,7 +105,7 @@
   </template>
   
 <script>
-import { createAxiosInstance } from '@/services/axiosInstance';
+import { loadGoals, loadSkills } from '@/services/profileService'; 
 
 export default {
   name: 'PostModal',
@@ -117,14 +129,15 @@ export default {
         type: 'TextPost',
         goalId: null,
         skillIds: [],
+        isCompleteGoal: false,
       }
     };
   },
   watch: {
-    isVisible(newVal) {
+    async isVisible(newVal) {
       if (newVal) {
-        this.loadGoals();
-        this.loadSkills();
+        this.goals = await loadGoals();
+        this.skills = await loadSkills();
       }
     },
   },
@@ -149,43 +162,6 @@ export default {
         skillIds: [],
       };
       this.selectedSkills = [];
-    },
-    async loadGoals() {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem('accessToken');
-
-      try {
-        const response = await axiosInstance.get("/users/profile/goals", {
-          headers: { 
-            Authorization: `Bearer ${accessToken}` 
-          },
-        });
-        
-        this.goals = response.data.map((goal) => ({
-          id: goal.id,
-          title: goal.title,
-        }));
-      } catch (error) {
-        console.error("Ошибка загрузки целей:", error);
-        this.goals = [];
-      }
-    },
-    async loadSkills() {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem('accessToken');
-
-      try {
-        const response = await axiosInstance.get("/users/profile/skills", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        this.skills = response.data.map((skill) => ({
-          id: skill.skillId,
-          name: skill.skillName,
-        }));
-      } catch (error) {
-        console.error("Ошибка загрузки навыков:", error);
-        this.skills = [];
-      }
     },
     toggleSkill(skill) {
       if (this.selectedSkills.includes(skill.id)) {

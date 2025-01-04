@@ -13,9 +13,9 @@
         v-for="post in posts"
         :key="post.id"
         :postData="post"
-        :current-user-id="this.currentUser?.userId"
+        :currentUserId="this.currentUser?.userId || ''"
         @delete="deletePost"
-        @edit-post="editPost"
+        @edit="openEditModal(post)"
       />
     </div>
 
@@ -25,11 +25,20 @@
       @submit="addPost"
       @close="showModal"
     />
+
+    <PostEditModal 
+      v-if="isEditModalOpen"
+      :post="currentPost"
+      :errors="errors"
+      @close="isEditModalOpen = false"
+      @submit="updatePost"
+    />
 </template>
 
 <script>
 import PostCard from '@/components/posts/PostCard.vue';
 import PostModal from '@/components/posts/PostModal.vue';
+import PostEditModal from './PostEditModal.vue';
 import { createAxiosInstance } from '@/services/axiosInstance';
 import { handleError } from '@/services/errorHandler';
 import { mapGetters } from 'vuex';
@@ -38,6 +47,7 @@ export default {
   components: {
     PostCard,
     PostModal,
+    PostEditModal
   },
   computed: {
     ...mapGetters(['currentUser']),
@@ -48,6 +58,8 @@ export default {
       posts: [],
       loading: true,
       errors: [],
+      isEditModalOpen: false,
+      currentPost: null,
     };
   },
   async mounted() {
@@ -57,6 +69,72 @@ export default {
     showModal() {
       this.isVisible = !this.isVisible;
       this.errors = [];
+    },
+    openEditModal(post) {
+      this.currentPost = { ...post };
+      this.isEditModalOpen = true;
+      this.errors = [];
+    },
+    async updatePost(updatedPost) {
+      const axiosInstancePosts = createAxiosInstance(8082);
+      const axiosInstanceProfileInfo = createAxiosInstance(8084);
+      const accessToken = localStorage.getItem('accessToken');
+
+      try {
+        const response = await axiosInstancePosts.patch(
+          `/posts/${updatedPost.id}`,
+          {
+            content: updatedPost.content,
+            type: "TextPost",
+            goalId: updatedPost.goalId,
+            skillIds: updatedPost.skillIds,
+          },
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        );
+
+        const updatedPostData = response.data;
+
+        let goal = null;
+        if (updatedPostData.goalId) {
+          goal = await axiosInstanceProfileInfo
+            .get(`/users/profile/goals/${updatedPostData.goalId}`)
+            .then((res) => res.data);
+
+          if (updatedPost.isCompleteGoal) {
+            await axiosInstanceProfileInfo.patch(`/users/profile/goals/${updatedPostData.goalId}`, 
+              { progress: 'Completed' },
+              { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            goal.progress = 'Completed';
+          }
+        }
+
+        let skills = [];
+        if (updatedPostData.skillIds.length > 0) {
+          const responseSkills = await axiosInstanceProfileInfo.post(
+            `/skills/check-skills`,
+            updatedPostData.skillIds,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          skills = responseSkills.data;
+        }
+
+        const index = this.posts.findIndex((p) => p.id === updatedPostData.id);
+        if (index !== -1) {
+          this.posts.splice(index, 1, {
+            ...updatedPostData,
+            goal,
+            skills,
+          });
+        }
+
+        this.isEditModalOpen = false;
+      } catch (error) {
+        this.errors = handleError(error.response?.data || {});
+      }
     },
     async fetchPosts() {
       const axiosInstancePosts = createAxiosInstance(8082);
@@ -117,6 +195,15 @@ export default {
               .get(`/users/profile/goals/${goalId}`)
               .then(res => res.data);
 
+              if (newPost.isCompleteGoal) {
+                await axiosInstanceProfileInfo.patch(`/users/profile/goals/${newPost.goalId}`, 
+                  { progress: 'Completed' },
+                  { headers: { Authorization: `Bearer ${accessToken}` } }
+                );
+
+                goal.progress = 'Completed';
+              }
+
               if (goal.progress === 'NotStarted') {
                 await axiosInstanceProfileInfo.patch(`/users/profile/goals/${goalId}`, 
                   { progress: 'InProgress' },
@@ -124,7 +211,7 @@ export default {
                 );
 
                 goal.progress = 'InProgress';
-              }
+              }             
             }
 
             let skills = [];
@@ -158,14 +245,6 @@ export default {
         this.posts = this.posts.filter(post => post.id !== postId);
       } catch (error) {
         console.error("Error deleting post:", error);
-      }
-    },
-    async editPost(postId) {
-      const postToEdit = this.posts.find(post => post.id === postId);
-
-      if (postToEdit) {
-        this.editingPost = { ...postToEdit };
-        this.showEditModal = true;
       }
     },
   },

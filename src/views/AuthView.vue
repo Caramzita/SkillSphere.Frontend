@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       isActive: true,
-      formData: { login: '', email: '', password: '', confirmPassword: '', rememberMe: false },
+      formData: { login: '', email: '', password: '', confirmPassword: '', rememberMe: true },
       errors: [],
     };
   },

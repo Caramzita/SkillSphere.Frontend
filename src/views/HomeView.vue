@@ -6,21 +6,23 @@
       <main class="flex-1 overflow-y-auto p-4">
         <PostSection />
       </main> 
+
       <aside
         id="sidebar"
         class="flex-none w-[calc(18rem-45px)] bg-white dark:bg-gray-900 overflow-y-auto border-l border-gray-200 dark:border-gray-600"
       >
-        <nav class="pt-5 px-1 pl-3 lg:pl-4 lg:pt-2 font-normal text-base lg:text-sm pb-10 lg:pb-20">
+        <nav class="pt-5 px-1 pl-1 lg:pl-1 lg:pt-2 font-normal text-base lg:text-sm pb-10 lg:pb-20">
           <ul class="mb-0 list-none">
             <li class="mt-2">
-              <h5 class="mb-2 pl-3 text-sm tracking-wide text-gray-900 uppercase lg:text-xs dark:text-white">
+              <h5 class="mb-2 text-center text-base font-extrabold tracking-wider text-gray-900 uppercase lg:text-sm dark:text-white font-sans">
                 Users List
               </h5>
               <ul class="py-1 list-none">
                 <li
                   v-for="user in userProfiles"
                   :key="user.id"
-                  class="flex items-center gap-4 py-2 px-3 transition-colors duration-200 relative hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                  class="flex items-center gap-4 py-2 px-4 mt-1 transition-colors duration-200 ease-in-out transform hover:scale-105 
+                    hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg shadow-sm"
                 >
                   <UserCard :userId="user.userId" />
                 </li>
