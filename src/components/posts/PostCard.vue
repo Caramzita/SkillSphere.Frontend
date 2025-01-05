@@ -68,16 +68,19 @@
       </span>
     </div>
 
-    <div class="border-b border-gray-600 mb-4"></div>
+    <div class="border-b border-gray-600 mb-3"></div>
 
     <!-- Кнопки реакций -->
     <PostReactions :postId="postData.id" />
+
+    <PostComments :postId="postData.id" />
   </div>
 </template>
 
 <script>
 import UserCard from '@/components/profile/UserCard.vue';
 import PostReactions from './PostReactions.vue';
+import PostComments from './PostComments.vue';
 import ConfirmModal from '../ConfirmModal.vue';
   
 export default {
@@ -96,6 +99,7 @@ export default {
     UserCard,
     PostReactions,
     ConfirmModal,
+    PostComments
   },
   data () {
     return {

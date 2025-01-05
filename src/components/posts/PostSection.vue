@@ -1,16 +1,96 @@
 <template>
-    <div class="flex justify-end">
-      <button
-        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-        @click="showModal"
-      >
-        + Add Post
-      </button>
+    <div class="flex justify-between items-center mb-4">
+        <div class="w-1/4"></div>
+
+        <div class="flex items-center gap-4 justify-center w-2/4">
+          <button @click="toggleSortOrder">
+            <svg 
+              v-if="sortOrder === 'asc'"
+              xmlns="http://www.w3.org/2000/svg" 
+              class="w-6 h-6 fill-black dark:fill-white transition-colors" 
+              viewBox="0 0 24 24">
+              <path d="M22,4.5a1,1,0,0,1-1,1H12a1,1,0,0,1,0-2h9A1,1,0,0,1,22,4.5Zm-1,4H14a1,1,0,0,0,0,2h7a1,1,0,0,0,0-2Zm0,
+              5H16a1,1,0,0,0,0,2h5a1,1,0,0,0,0-2Zm0,5H18a1,1,0,0,0,0,2h3a1,1,0,0,0,0-2ZM6,2A1,1,0,0,0,5,3V18.586L3.707,
+              17.293a1,1,0,0,0-1.414,1.414l3,3a1,1,0,0,0,1.416,0l3-3a1,1,0,0,0-1.414-1.414L7,18.586V3A1,1,0,0,0,6,2Z"/>
+            </svg>
+            <svg 
+              v-if="sortOrder === 'desc'"
+              xmlns="http://www.w3.org/2000/svg" 
+              class="w-6 h-6 fill-black dark:fill-white transition-colors" 
+              viewBox="0 0 24 24" 
+              transform="matrix(-1, 0, 0, 1, 0, 0)rotate(180)"
+            >
+              <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+              <g id="SVGRepo_iconCarrier">
+              <path d="M22,4.5a1,1,0,0,1-1,1H12a1,1,0,0,1,0-2h9A1,1,0,0,1,22,4.5Zm-1,4H14a1,1,0,0,0,0,2h7a1,1,0,0,0,0-2Zm0,
+                5H16a1,1,0,0,0,0,2h5a1,1,0,0,0,0-2Zm0,5H18a1,1,0,0,0,0,2h3a1,1,0,0,0,0-2ZM6,2A1,1,0,0,0,5,3V18.586L3.707,
+                17.293a1,1,0,0,0-1.414,1.414l3,3a1,1,0,0,0,1.416,0l3-3a1,1,0,0,0-1.414-1.414L7,18.586V3A1,1,0,0,0,6,2Z"/>
+              </g>
+            </svg>
+          </button>         
+
+          <!-- Фильтрация по навыкам -->
+          <div class="relative">
+          <button
+            @click="showSkills = !showSkills"
+            class="border px-3 py-1 rounded-xl hover:bg-primary-700 dark:bg-gray-800 dark:text-white"
+          >
+            Filter by Skills
+          </button>
+          <div
+            v-if="showSkills"
+            @mouseleave="applySkillFilter"
+            class="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 w-64 dark:bg-gray-800 z-50"
+          >
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="skill in userSkills"
+                :key="skill.id"
+                @click="toggleSkill(skill)"
+                :class="{
+                  'bg-blue-600 text-white': selectedSkills.includes(skill.id),
+                  'bg-gray-200 dark:bg-gray-600 dark:text-gray-100': !selectedSkills.includes(skill.id),
+                }"
+                class="px-4 py-1 rounded-full text-sm font-medium transition duration-200 ease-in-out hover:bg-blue-500 hover:text-white"
+              >
+                {{ skill.name }}
+              </button>
+            </div>   
+          </div>
+        </div>
+        
+          <!-- Фильтрация по дате публикации -->
+          <button
+            @click="applySort('date')"
+            class="border px-3 py-1 rounded-xl hover:bg-primary-700 dark:bg-gray-800 dark:text-white"
+          >
+            Sort by Date
+          </button>
+          
+          <!-- Фильтрация по количеству лайков -->
+          <button
+            @click="applySort('likes')"
+            class="border px-2 py-1 rounded-xl hover:bg-primary-700 dark:bg-gray-800 dark:text-white"
+          >
+            Sort by Likes
+          </button>
+        </div>
+      
+      <div class="w-1/4 flex justify-end">
+        <button
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          @click="showModal"
+        >
+          + Add Post
+        </button>
+      </div>   
     </div>
+
     <div v-if="loading" class="loading">Loading posts...</div>
     <div v-else>
       <PostCard
-        v-for="post in posts"
+        v-for="post in filteredPosts"
         :key="post.id"
         :postData="post"
         :currentUserId="this.currentUser?.userId || ''"
@@ -42,6 +122,7 @@ import PostEditModal from './PostEditModal.vue';
 import { createAxiosInstance } from '@/services/axiosInstance';
 import { handleError } from '@/services/errorHandler';
 import { mapGetters } from 'vuex';
+import { loadSkills } from '@/services/profileService';
 
 export default {
   components: {
@@ -51,6 +132,32 @@ export default {
   },
   computed: {
     ...mapGetters(['currentUser']),
+
+    filteredPosts() {
+      let posts = [...this.posts];
+
+      if (this.sortBy) {
+        posts.sort((a, b) => {
+          if (this.sortBy === "date") {
+            return this.sortOrder === "asc"
+              ? new Date(a.createdAt) - new Date(b.createdAt)
+              : new Date(b.createdAt) - new Date(a.createdAt);
+          }
+          if (this.sortBy === "likes") {
+            return this.sortOrder === "desc" ? a.likes - b.likes : b.likes - a.likes;
+          }
+        });
+      }
+
+      // Фильтрация по навыкам
+      if (this.selectedSkills.length) {
+        posts = posts.filter((post) =>
+          this.selectedSkills.every((skill) => post.skillIds.includes(skill))
+        );
+      }
+
+      return posts;
+    },
   },
   data() {
     return {
@@ -60,10 +167,16 @@ export default {
       errors: [],
       isEditModalOpen: false,
       currentPost: null,
+
+      sortOrder: "desc",
+      sortBy: "date",
+      showSkills: false,
+      selectedSkills: [],
     };
   },
   async mounted() {
     await this.fetchPosts();
+    this.userSkills = await loadSkills();
   },
   methods: {
     showModal() {
@@ -74,6 +187,22 @@ export default {
       this.currentPost = { ...post };
       this.isEditModalOpen = true;
       this.errors = [];
+    },
+    toggleSortOrder() {
+      this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+    },
+    applySort(type) {
+      this.sortBy = type;
+    },
+    applySkillFilter() {
+      this.showSkills = false;
+    },
+    toggleSkill(skill) {
+      if (this.selectedSkills.includes(skill.id)) {
+        this.selectedSkills = this.selectedSkills.filter((id) => id !== skill.id);
+      } else {
+        this.selectedSkills.push(skill.id);
+      }    
     },
     async updatePost(updatedPost) {
       const axiosInstancePosts = createAxiosInstance(8082);
