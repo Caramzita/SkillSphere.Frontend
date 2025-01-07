@@ -64,6 +64,15 @@ export default {
         'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
     },
   },
+  watch: {
+    userId: {
+      immediate: false,
+      async handler() {
+        this.loading = true;
+        await this.fetchUser();
+      },
+    },
+  },
   data() {
     return {
       user: null,

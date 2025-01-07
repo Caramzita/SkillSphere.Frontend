@@ -64,7 +64,7 @@
 </template>
   
 <script>
-import { createAxiosInstance } from '@/services/axiosInstance';
+import { loadCategoriesAndSkills } from '@/services/profileService';
 
 export default {
   props: {
@@ -81,22 +81,9 @@ export default {
     };
   },
   async mounted() {
-    await this.loadCategoriesAndSkills();
+    this.categories = await loadCategoriesAndSkills();
   },
   methods: {
-    async loadCategoriesAndSkills() {
-      const axiosInstance = createAxiosInstance(8084);
-
-      try {
-        const response = await axiosInstance.get("/categories");
-        this.categories = response.data.map((category) => ({
-          ...category,
-          skills: category.skills || [],
-        }));
-      } catch (error) {
-        console.error("Ошибка загрузки категорий и навыков:", error);
-      }
-    },
     toggleSkill(skill) {
       if (this.selectedSkills.includes(skill.id)) {
         this.selectedSkills = this.selectedSkills.filter((id) => id !== skill.id);

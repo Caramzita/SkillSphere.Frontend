@@ -1,26 +1,27 @@
 <template>
-    <div class="post-comments">
-      <!-- Топовый комментарий -->
-      <div v-if="topComment" class="top-comment">
-        <strong class="text-gray-700 dark:text-gray-300">Top Comment:</strong>
-        <p class="text-gray-700 dark:text-gray-300">{{ topComment.content }}</p>
-      </div>
-      <p v-else class="text-gray-700 dark:text-gray-300">No comments yet.</p>
+  <div class="post-comments">
+    <!-- Топовый комментарий -->
+    <div v-if="topComment" class="top-comment mt-2">
+      <CommentCard :comment="topComment" />
+    </div>
+
+    <!-- Список всех комментариев -->
+    <ul v-if="showAllComments">
+      <li v-for="comment in filteredComments" :key="comment.id">
+        <div class="border-b border-gray-600 mt-2 mb-2"></div>
+        <CommentCard :comment="comment"/>
+      </li>
+    </ul>
   
+    <div :class="comments.length > 1 ? 'mt-2' : 'mt-3'">
       <!-- Кнопка для показа всех комментариев -->
-      <button @click="toggleComments">
-        {{ showAllComments ? 'Hide Comments' : `View all comments (${commentsCount})` }}
-      </button>
+      <button v-if="comments.length > 1" @click="toggleComments">
+        <p class="text-primary-700 dark:text-primary-500">
+          {{ showAllComments ? 'Hide Comments' : `View all comments (${commentsCount - 1})` }}
+        </p>
+      </button> 
   
-      <!-- Список всех комментариев -->
-      <ul v-if="showAllComments">
-        <li v-for="comment in comments" :key="comment.id">
-          <p>{{ comment.content }}</p>
-          <small>Likes: {{ comment.likes }}</small>
-        </li>
-      </ul>
-  
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between mt-0.5">
         <textarea 
             v-model="newComment" 
             placeholder="Write a comment..." 
@@ -49,82 +50,93 @@
             </svg>
         </button>
       </div>
-    </div>
-  </template>
+    </div>  
+  </div>
+</template>
   
-  <script>
-  import { createAxiosInstance } from '@/services/axiosInstance';
-  
-  export default {
-    name: 'PostComments',
-    props: {
-      postId: {
-        type: String,
-        required: true,
+<script>
+import { createAxiosInstance } from '@/services/axiosInstance';
+import CommentCard from './CommentCard.vue';
+
+export default {
+  name: 'PostComments',
+  props: {
+    postId: {
+      type: String,
+      required: true,
+    },
+  },
+  components: {
+    CommentCard,
+  },
+  computed: {
+    filteredComments() {
+      if (!this.topComment) return this.comments;
+      
+      return this.comments.filter(comment => comment.id !== this.topComment.id);
+    }
+  },
+  data() {
+    return {
+      comments: [],
+      topComment: null,
+      newComment: '',
+      commentsCount: 0,
+      showAllComments: false,
+      axiosInstance: createAxiosInstance(8083),
+    };
+  },
+  methods: {
+      resizeTextarea() {
+          const textarea = this.$refs.textarea;
+          textarea.style.height = '8';
+          textarea.style.height = `${textarea.scrollHeight}px`;
       },
-    },
-    data() {
-      return {
-        comments: [],
-        topComment: null,
-        newComment: '',
-        commentsCount: 0,
-        showAllComments: false,
-        axiosInstance: createAxiosInstance(8083),
-      };
-    },
-    methods: {
-        resizeTextarea() {
-            const textarea = this.$refs.textarea;
-            textarea.style.height = '8';
-            textarea.style.height = `${textarea.scrollHeight}px`;
-        },
-        async fetchComments() {
-            try {
-            const { data } = await this.axiosInstance.get(`/interactions/posts/${this.postId}/comments`);
-            this.comments = data;
-            this.commentsCount = data.length;
-    
-            // Определение топового комментария
-            if (data.length > 0) {
-                this.topComment = data.reduce((prev, curr) =>
-                curr.likes > prev.likes ? curr : prev
-                );
-            }
-            } catch (error) {
-            console.error('Error fetching comments:', error);
-            }
-        },
-        async addComment() {
-            if (!this.newComment.trim()) return;
-    
-            try {
-            const { data } = await this.axiosInstance.post(
-                `/interactions/posts/${this.postId}/comments`,
-                { content: this.newComment.trim() }
+      async fetchComments() {
+          try {
+          const { data } = await this.axiosInstance.get(`/interactions/posts/${this.postId}/comments`);
+          this.comments = data;
+          this.commentsCount = data.length;
+  
+          if (data.length > 0) {
+            this.topComment = data.reduce((prev, curr) => 
+              new Date(curr.createdAt) > new Date(prev.createdAt) ? curr : prev
             );
-            this.comments.push(data);
-            this.newComment = '';
-            this.commentsCount++;
-            this.fetchComments();
-            } catch (error) {
-            console.error('Error adding comment:', error);
-            }
-        },
-        toggleComments() {
-            this.showAllComments = !this.showAllComments;
-    
-            // Если комментарии ещё не загружены, загрузить их при открытии
-            if (this.showAllComments && this.comments.length === 0) {
-            this.fetchComments();
-            }
-        },
-    },
-    mounted() {
-      this.fetchComments();
-    },
-  };
-  </script>
+          }
+          } catch (error) {
+          console.error('Error fetching comments:', error);
+          }
+      },
+      async addComment() {
+          if (!this.newComment.trim()) return;
+  
+          try {
+          const { data } = await this.axiosInstance.post(
+              `/interactions/posts/${this.postId}/comments`,
+              { content: this.newComment.trim() }
+          );
+          this.comments.push(data);
+          this.newComment = '';
+          this.commentsCount++;
+          this.fetchComments();
+          } catch (error) {
+          console.error('Error adding comment:', error);
+          }
+      },
+      toggleComments() {
+          this.showAllComments = !this.showAllComments;
+  
+          // Если комментарии ещё не загружены, загрузить их при открытии
+          if (this.showAllComments && this.comments.length === 0) {
+          this.fetchComments();
+          }
+      },
+  },
+  mounted() {
+    this.fetchComments();
+  },
+};
+</script>
 
 <style scoped>
 .comment-input {

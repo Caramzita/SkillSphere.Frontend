@@ -39,3 +39,18 @@ export async function loadSkills() {
         return [];
     }
 }
+
+export async function loadCategoriesAndSkills() {
+  const axiosInstance = createAxiosInstance(8084);
+
+  try {
+    const response = await axiosInstance.get("/categories");
+    return response.data.map((category) => ({
+      ...category,
+      skills: category.skills || [],
+    }));
+  } catch (error) {
+    console.error("Ошибка загрузки категорий и навыков:", error);
+    return [];
+  }
+}

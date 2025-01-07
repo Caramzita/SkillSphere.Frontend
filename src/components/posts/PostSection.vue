@@ -43,18 +43,18 @@
             @mouseleave="applySkillFilter"
             class="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 w-64 dark:bg-gray-800 z-50"
           >
-            <div class="flex flex-wrap gap-2">
+            <div v-for="category in categories" :key="category.id" class="flex flex-wrap gap-2">
               <button
-                v-for="skill in userSkills"
+                v-for="skill in category.skills"
                 :key="skill.id"
                 @click="toggleSkill(skill)"
                 :class="{
-                  'bg-blue-600 text-white': selectedSkills.includes(skill.id),
-                  'bg-gray-200 dark:bg-gray-600 dark:text-gray-100': !selectedSkills.includes(skill.id),
+                'bg-blue-600 text-white': selectedSkills.includes(skill.id),
+                'bg-gray-200 dark:bg-gray-600 dark:text-gray-100': !selectedSkills.includes(skill.id),
                 }"
                 class="px-4 py-1 rounded-full text-sm font-medium transition duration-200 ease-in-out hover:bg-blue-500 hover:text-white"
               >
-                {{ skill.name }}
+                  {{ skill.name }}
               </button>
             </div>   
           </div>
@@ -70,8 +70,9 @@
           
           <!-- Фильтрация по количеству лайков -->
           <button
+            hidden
             @click="applySort('likes')"
-            class="border px-2 py-1 rounded-xl hover:bg-primary-700 dark:bg-gray-800 dark:text-white"
+            class="border px-2 py-1 rounded-xl hover:bg-gray-700 dark:bg-gray-800 dark:text-white"
           >
             Sort by Likes
           </button>
@@ -122,7 +123,7 @@ import PostEditModal from './PostEditModal.vue';
 import { createAxiosInstance } from '@/services/axiosInstance';
 import { handleError } from '@/services/errorHandler';
 import { mapGetters } from 'vuex';
-import { loadSkills } from '@/services/profileService';
+import { loadCategoriesAndSkills } from '@/services/profileService';
 
 export default {
   components: {
@@ -176,7 +177,7 @@ export default {
   },
   async mounted() {
     await this.fetchPosts();
-    this.userSkills = await loadSkills();
+    this.categories = await loadCategoriesAndSkills();
   },
   methods: {
     showModal() {

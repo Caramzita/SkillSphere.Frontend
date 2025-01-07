@@ -8,15 +8,15 @@
             class="reaction-button flex items-center gap-1 text-gray-700 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300">
             <svg 
                 class="w-6 h-6 transition-colors duration-200" 
-                :fill="isLike || isHoverLike ? 'currentColor' : 'none'" 
+                :fill="(isLike || isHoverLike) ? 'currentColor' : 'none'" 
                 fill-rule="nonzero"
                 stroke="currentColor"
                 viewBox="0 0 24 24" 
                 xmlns="http://www.w3.org/2000/svg"
-                :style="{ opacity: 1 }">
+                :style="{ opacity: 1, transition: 'fill 0.2s ease, stroke 0.2s ease' }">
                 <path xmlns="http://www.w3.org/2000/svg" d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 
                     12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z" 
-                    :stroke="isLike ? currentColor : 'dark:white black'"
+                    :stroke="isLike ? 'currentColor' : 'dark:white black'"
                     stroke-width="2" 
                     stroke-linecap="round" 
                     stroke-linejoin="round"/>
@@ -27,10 +27,10 @@
             @click="toggleReaction('Dislike')" 
             @mouseenter="isHoverDislike = true" 
             @mouseleave="isHoverDislike = false"
-            class="reaction-button flex items-center gap-1 text-gray-700 dark:text-gray-100 hover:text-red-600 dark:hover:text-red-400">
+            class="reaction-button flex items-center gap-1 text-gray-700 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300">
             <svg 
                 class="w-6 h-6 transition-colors duration-200" 
-                :fill="isDislike ? 'rgb(248 113 113)' : (isHoverDislike ? 'rgb(248 113 113)' : 'none')" 
+                :fill="isDislike || isHoverDislike ? 'rgb(248 113 113)' : 'none'" 
                 fill-rule="nonzero"
                 d="M0 0H24V24H0z"
                 stroke="currentColor" 
@@ -45,7 +45,7 @@
                     20.0063 12.0393 20.0063 12.1225 19.9816C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 
                     18.4479 18.3778 14.4655 19.8499 12.5772C21.6204 10.3062 21.3417 7.07543 19.0484 5.17539C16.7551 
                     3.27535 13.7994 3.90309 12 6.00011Z" 
-                    :stroke="isLike ? currentColor : 'dark:white black'"
+                    :stroke="isLike ? 'currentColor' : 'dark:white black'"
                     stroke-width="2" 
                     stroke-linecap="round" 
                     stroke-linejoin="round"/>    
