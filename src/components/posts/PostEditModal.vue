@@ -34,12 +34,13 @@
         </label>
         <textarea
           v-model="editedPost.content"
+          @blur="formatContent"
           rows="4"
           class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white max-h-[350px] resize-y"
         ></textarea>
         <p v-if="errors.content" class="text-red-600 text-m pl-1">{{ errors.content }}</p>
 
-        <div class="mt-2">
+        <div v-if="post.goalId" class="mt-2">
           <label class="inline-flex items-center">
             <input
               type="checkbox"
@@ -84,6 +85,7 @@
   
 <script>
 import { loadSkills } from '@/services/profileService';
+import { trimAndFormatContent } from '@/services/textFormatter';
 
 export default {
   name: "EditPostModal",
@@ -112,6 +114,8 @@ export default {
   methods: {
     submitEdit() {
       this.editedPost.skillIds = this.selectedSkills;
+      this.formatContent();
+
       this.$emit('submit', this.editedPost);
     },
     toggleSkill(skill) {
@@ -121,6 +125,9 @@ export default {
         this.selectedSkills.push(skill.id);
       }    
     },
+    formatContent() {
+      this.editedPost.content = trimAndFormatContent(this.editedPost.content);
+    }
   },
 };
 </script>

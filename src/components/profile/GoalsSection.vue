@@ -50,9 +50,9 @@
             </span>
             <button
               v-if="visible"
-              @click="deleteGoal(goal.id)"
+              @click="showDeleteModal = true, selectedGoal = goal.id"
               class="flex items-center justify-center w-6 h-6 text-white rounded hover:bg-red-600 transition-colors"
-            >
+            >       
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
@@ -70,6 +70,15 @@
       </li>
     </ul>    
   </div>
+  <ConfirmModal
+    v-if="showDeleteModal"
+    :isVisible="showDeleteModal"
+    title="Delete Goal"
+    message="Are you sure you want to delete this goal? This action cannot be undone."
+    @confirm="deleteGoal(this.selectedGoal)"
+    @cancel="showDeleteModal = false"
+  />
+
   <AddGoalModal
     v-if="isVisible"
     :visible="isVisible"
@@ -83,10 +92,12 @@
 import AddGoalModal from "./modals/AddGoalModal.vue";
 import { createAxiosInstance } from "@/services/axiosInstance";
 import { handleError } from '@/services/errorHandler';
+import ConfirmModal from "../ConfirmModal.vue";
 
 export default {
   components: {
-    AddGoalModal
+    AddGoalModal,
+    ConfirmModal
   },
   props: {
     initialGoals: {
@@ -100,7 +111,9 @@ export default {
   },
   data() {
     return {
+      showDeleteModal: false,
       goals: [...this.initialGoals],
+      selectedGoal: '',
       goalStatus: {
         NotStarted: { text: "Not started", progress: "0%", progressClass: "bg-gray-400", icon: 'div' },
         InProgress: { text: "In progress", progress: "50%", progressClass: "bg-blue-400", icon: 'div' },
@@ -149,6 +162,7 @@ export default {
       }
     },
     async deleteGoal(id){
+      this.showDeleteModal = false;
       const axiosInstance = createAxiosInstance(8084);
       const accessToken = localStorage.getItem("accessToken");
 

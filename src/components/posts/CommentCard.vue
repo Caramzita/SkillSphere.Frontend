@@ -4,7 +4,13 @@
             class="scale-90 origin-left" 
             :userId="comment.userId"
         />
-        <p class="text-gray-700 dark:text-gray-300 break-words overflow-hidden">{{ comment.content }}</p>
+        <p
+            v-for="(paragraph, index) in paragraphs"
+            :key="index"
+            class="text-gray-700 dark:text-gray-300 break-words overflow-hidden"
+        >
+            {{ paragraph }}
+        </p>
     </div> 
 </template>
 
@@ -22,10 +28,10 @@ export default {
     components: {
         UserCard,
     },
-    data () {
-        return {
-
-        };
-    }
+    computed: {
+        paragraphs() {
+            return this.comment.content.split('\n').filter(line => line.trim().length > 0);
+        },
+    },
 }
 </script>

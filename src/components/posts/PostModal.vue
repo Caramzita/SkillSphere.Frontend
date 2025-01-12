@@ -54,6 +54,7 @@
           </label>
           <textarea
             v-model="post.content"
+            @blur="formatContent"
             rows="4"
             class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white max-h-[350px] resize-y"
             placeholder="Write your post content..."
@@ -106,6 +107,7 @@
   
 <script>
 import { loadGoals, loadSkills } from '@/services/profileService'; 
+import { trimAndFormatContent } from '@/services/textFormatter';
 
 export default {
   name: 'PostModal',
@@ -148,6 +150,8 @@ export default {
     },
     submitPost() {
       this.post.skillIds = this.selectedSkills;
+      this.formatContent();
+
       this.$emit('submit', this.post);
 
       if (Object.keys(this.errors).length === 0) {
@@ -170,6 +174,9 @@ export default {
         this.selectedSkills.push(skill.id);
       }    
     },
+    formatContent() {
+      this.post.content = trimAndFormatContent(this.post.content);
+    }
   },
 };
 </script>

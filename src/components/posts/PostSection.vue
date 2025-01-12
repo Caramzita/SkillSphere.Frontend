@@ -210,6 +210,8 @@ export default {
       const axiosInstanceProfileInfo = createAxiosInstance(8084);
       const accessToken = localStorage.getItem('accessToken');
 
+      console.log(updatedPost.goalId);
+
       try {
         const response = await axiosInstancePosts.patch(
           `/posts/${updatedPost.id}`,

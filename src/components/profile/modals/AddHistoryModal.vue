@@ -94,6 +94,8 @@
 </template>
 
 <script>
+import { trimAndFormatContent } from '@/services/textFormatter';
+
 export default {
   props: {
     visible: {
@@ -116,6 +118,9 @@ export default {
   },
   methods: {
     saveHistory() {
+      this.newHistory.courseTitle = trimAndFormatContent(this.newHistory.courseTitle);
+      this.newHistory.description = trimAndFormatContent(this.newHistory.description);
+
       this.$emit("save", this.newHistory);
       this.newHistory = { courseTitle: '', description: '', completedDate: '' };
     },

@@ -65,6 +65,8 @@
 </template>
 
 <script>
+import { trimAndFormatContent } from '@/services/textFormatter';
+
 export default {
   props: {
     visible: {
@@ -85,6 +87,8 @@ export default {
   },
   methods: {
     saveGoal() {
+      this.newGoal.title = trimAndFormatContent(this.newGoal.title);
+
       this.$emit("save", this.newGoal);
       this.newGoal = { title: "" };
     },

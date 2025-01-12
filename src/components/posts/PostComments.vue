@@ -57,6 +57,7 @@
 <script>
 import { createAxiosInstance } from '@/services/axiosInstance';
 import CommentCard from './CommentCard.vue';
+import { trimAndFormatContent } from '@/services/textFormatter';
 
 export default {
   name: 'PostComments',
@@ -74,7 +75,7 @@ export default {
       if (!this.topComment) return this.comments;
       
       return this.comments.filter(comment => comment.id !== this.topComment.id);
-    }
+    },
   },
   data() {
     return {
@@ -88,9 +89,9 @@ export default {
   },
   methods: {
       resizeTextarea() {
-          const textarea = this.$refs.textarea;
-          textarea.style.height = '8';
-          textarea.style.height = `${textarea.scrollHeight}px`;
+        const textarea = this.$refs.textarea;
+        textarea.style.height = '32px';
+        textarea.style.height = `${textarea.scrollHeight}px`;
       },
       async fetchComments() {
           try {
@@ -109,11 +110,13 @@ export default {
       },
       async addComment() {
           if (!this.newComment.trim()) return;
+
+          this.newComment = trimAndFormatContent(this.newComment);
   
           try {
           const { data } = await this.axiosInstance.post(
               `/interactions/posts/${this.postId}/comments`,
-              { content: this.newComment.trim() }
+              { content: this.newComment }
           );
           this.comments.push(data);
           this.newComment = '';

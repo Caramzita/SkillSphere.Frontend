@@ -8,7 +8,7 @@
             class="reaction-button flex items-center gap-1 text-gray-700 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-300">
             <svg 
                 class="w-6 h-6 transition-colors duration-200" 
-                :fill="(isLike || isHoverLike) ? 'currentColor' : 'none'" 
+                :fill="(isLike || isHoverLike) ? 'rgb(248 113 113)' : 'none'" 
                 fill-rule="nonzero"
                 stroke="currentColor"
                 viewBox="0 0 24 24" 

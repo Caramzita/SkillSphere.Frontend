@@ -53,10 +53,14 @@
 
     <!-- Основное содержание поста -->
     <div class="post-content mb-2 mt-1">
-      <p class="text-gray-700 dark:text-gray-300">
-        {{ postData.content }}
+      <p
+        v-for="(paragraph, index) in paragraphs"
+        :key="index"
+        class="text-gray-700 dark:text-gray-300 break-words overflow-hidden"
+      >
+        {{ paragraph }}
       </p>
-    </div>   
+    </div> 
 
     <div v-if="postData.skills.length > 0" class="skills flex flex-wrap gap-2 pb-3">
       <span
@@ -82,6 +86,7 @@ import UserCard from '@/components/profile/UserCard.vue';
 import PostReactions from './PostReactions.vue';
 import PostComments from './PostComments.vue';
 import ConfirmModal from '../ConfirmModal.vue';
+import { trimAndFormatContent } from '@/services/textFormatter';
   
 export default {
   name: 'PostCard',
@@ -101,6 +106,11 @@ export default {
     ConfirmModal,
     PostComments
   },
+  computed: {
+    paragraphs() {
+      return this.postData.content.split('\n').filter(line => line.trim().length > 0);
+    },
+  },
   data () {
     return {
       showDeleteModal: false,
@@ -118,6 +128,9 @@ export default {
     },
     openEditModal() {
       this.$emit('edit-post', this.postData.id);
+    },
+    processInput() {
+      this.inputValue = trimAndFormatContent(this.inputValue);
     },
   }
 };

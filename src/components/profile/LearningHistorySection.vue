@@ -24,19 +24,19 @@
     </div>
     <ul class="space-y-3 m-4">
       <li
-        v-for="item in history"
-        :key="item.id"
+        v-for="history in histories"
+        :key="history.id"
         class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm flex items-center justify-between"
       >
         <div>
           <p class="text-gray-800 dark:text-gray-200">
-            <strong>{{ item.courseTitle }}</strong> - {{ formatDate(item.completedDate) }}
+            <strong>{{ history.courseTitle }}</strong> - {{ formatDate(history.completedDate) }}
           </p>
-          <p class="text-gray-600 dark:text-gray-400">{{ item.description }}</p>
+          <p class="text-gray-600 dark:text-gray-400">{{ history.description }}</p>
         </div>
         <button
           v-if="visible"
-          @click="deleteHistory(item.id)"
+          @click="showDeleteModal = true, selectedHistory = history.id"
           class="flex items-center justify-center w-6 h-6 text-white rounded hover:bg-red-600 transition-colors"
         >
           <svg
@@ -55,6 +55,15 @@
       </li>
     </ul>  
   </div>
+  <ConfirmModal
+    v-if="showDeleteModal"
+    :isVisible="showDeleteModal"
+    title="Delete learing history"
+    message="Are you sure you want to delete this history? This action cannot be undone."
+    @confirm="deleteHistory(this.selectedHistory)"
+    @cancel="showDeleteModal = false"
+  />
+
   <AddHistoryModal
     v-if="isVisible"
     :visible="isVisible"
@@ -68,10 +77,12 @@
 import AddHistoryModal from "./modals/AddHistoryModal.vue";
 import { createAxiosInstance } from "@/services/axiosInstance";
 import { handleError } from '@/services/errorHandler';
+import ConfirmModal from "../ConfirmModal.vue";
 
 export default {
   components: {
-    AddHistoryModal
+    AddHistoryModal,
+    ConfirmModal
   },
   props: {
     initialHistory: {
@@ -85,7 +96,9 @@ export default {
   },
   data() {
     return {
-      history: [...this.initialHistory],
+      showDeleteModal: false,
+      selectedHistory: '',
+      histories: [...this.initialHistory],
       isVisible: false,
       errors: [],
     };
@@ -122,7 +135,7 @@ export default {
         );
 
         if (response.status === 200){
-          this.history.push(response.data);
+          this.histories.push(response.data);
           this.errors = [];
           this.showModal();
         }
@@ -132,6 +145,7 @@ export default {
       }
     },
     async deleteHistory(id){
+      this.showDeleteModal = false;
       const axiosInstance = createAxiosInstance(8084);
       const accessToken = localStorage.getItem("accessToken");
 
@@ -146,7 +160,7 @@ export default {
         );
 
         if (response.status === 204){
-          this.history = this.history.filter(item => item.id !== id);
+          this.histories = this.histories.filter(history => history.id !== id);
         }
       } catch (error) {
         this.errors = handleError(error.response?.data || {});
