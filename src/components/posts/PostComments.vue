@@ -1,11 +1,9 @@
 <template>
   <div class="post-comments">
-    <!-- Топовый комментарий -->
     <div v-if="topComment" class="top-comment mt-2">
       <CommentCard :comment="topComment" />
     </div>
 
-    <!-- Список всех комментариев -->
     <ul v-if="showAllComments">
       <li v-for="comment in filteredComments" :key="comment.id">
         <div class="border-b border-gray-600 mt-2 mb-2"></div>
@@ -14,7 +12,6 @@
     </ul>
   
     <div :class="comments.length > 1 ? 'mt-2' : 'mt-3'">
-      <!-- Кнопка для показа всех комментариев -->
       <button v-if="comments.length > 1" @click="toggleComments">
         <p class="text-primary-700 dark:text-primary-500">
           {{ showAllComments ? 'Hide Comments' : `View all comments (${commentsCount - 1})` }}
@@ -129,7 +126,6 @@ export default {
       toggleComments() {
           this.showAllComments = !this.showAllComments;
   
-          // Если комментарии ещё не загружены, загрузить их при открытии
           if (this.showAllComments && this.comments.length === 0) {
           this.fetchComments();
           }

@@ -42,14 +42,14 @@
 <script>
 export default {
     props: {
-        currentStep: {
+      currentStep: {
         type: Number,
         required: true,
-        },
-        steps: {
+      },
+      steps: {
         type: Array,
         required: true,
-        },
+      },
     },
 };
 </script>
