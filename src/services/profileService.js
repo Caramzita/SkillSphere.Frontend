@@ -1,9 +1,9 @@
 import { createAxiosInstance } from "./axiosInstance";
 
-export async function loadGoals() {
-    const axiosInstance = createAxiosInstance(8084);
-    const accessToken = localStorage.getItem('accessToken');
+const axiosInstance = createAxiosInstance();
+const accessToken = localStorage.getItem('accessToken');
 
+export async function loadGoals() {
     try {
       const response = await axiosInstance.get("/users/profile/goals", {
         headers: { 
@@ -22,9 +22,6 @@ export async function loadGoals() {
 }
 
 export async function loadSkills() {
-    const axiosInstance = createAxiosInstance(8084);
-    const accessToken = localStorage.getItem('accessToken');
-
     try {
         const response = await axiosInstance.get("/users/profile/skills", {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -41,8 +38,6 @@ export async function loadSkills() {
 }
 
 export async function loadCategoriesAndSkills() {
-  const axiosInstance = createAxiosInstance(8084);
-
   try {
     const response = await axiosInstance.get("/categories");
     return response.data.map((category) => ({

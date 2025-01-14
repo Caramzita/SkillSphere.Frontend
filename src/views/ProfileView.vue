@@ -78,6 +78,9 @@ import GoalsSection from "@/components/profile/GoalsSection.vue";
 import LearningHistorySection from "@/components/profile/LearningHistorySection.vue";
 import SkillsSection from "@/components/profile/SkillsSection.vue";
 
+const axiosInstance = createAxiosInstance();
+const accessToken = localStorage.getItem("accessToken");
+
 export default {
   components: {
     AppHeader,
@@ -139,10 +142,7 @@ export default {
   },
   },
   methods: {
-    async fetchUserProfile() {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
+    async fetchUserProfile() {  
       try {
         const response = await axiosInstance.get(
           `/users/profile/${this.userId}`,
@@ -169,9 +169,6 @@ export default {
       }
     },
     async saveProfile(updatedProfile) {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axiosInstance.patch(
           `/users/profile`, updatedProfile,

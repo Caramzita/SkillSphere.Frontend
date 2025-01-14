@@ -105,7 +105,7 @@ export default {
         formData.append('profilePicture', this.localFormData.profilePicture);
       }
 
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
       const accessToken = localStorage.getItem('accessToken');
 
       try {

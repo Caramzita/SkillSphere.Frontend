@@ -15,7 +15,7 @@ export default createStore({
   },
   actions: {
     async fetchCurrentUser({ commit }) {
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
       const accessToken = localStorage.getItem('accessToken');
 
       try {

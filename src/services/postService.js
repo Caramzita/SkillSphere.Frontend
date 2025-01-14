@@ -1,20 +1,19 @@
 import { createAxiosInstance } from './axiosInstance';
 import { handleError } from './errorHandler';
 
-const axiosInstancePosts = createAxiosInstance(8082);
-const axiosInstanceProfileInfo = createAxiosInstance(8084);
+const axiosInstance = createAxiosInstance();
 const accessToken = localStorage.getItem('accessToken');
 
 export async function fetchPosts() {
   try {
-    const response = await axiosInstancePosts.get('/posts');
+    const response = await axiosInstance.get('/posts');
     const rawPosts = response.data;
 
     const goalIds = [...new Set(rawPosts.map(post => post.goalId).filter(Boolean))];
     const skillIds = [...new Set(rawPosts.flatMap(post => post.skillIds).filter(Boolean))];
 
     const goalPromises = goalIds.map(id =>
-      axiosInstanceProfileInfo
+      axiosInstance
         .get(`/users/profile/goals/${id}`)
         .then(res => res.data)
         .catch(() => null)
@@ -23,7 +22,7 @@ export async function fetchPosts() {
 
     let skills = [];
     if (skillIds.length > 0) {
-      const responseSkills = await axiosInstanceProfileInfo.post(`/skills/check-skills`, skillIds);
+      const responseSkills = await axiosInstance.post(`/skills/check-skills`, skillIds);
       skills = responseSkills.data;
     }
 
@@ -42,7 +41,7 @@ export async function fetchPosts() {
 
 export async function addPost(newPost) {
   try {
-    const response = await axiosInstancePosts.post('/posts', newPost, {
+    const response = await axiosInstance.post('/posts', newPost, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
@@ -50,12 +49,12 @@ export async function addPost(newPost) {
 
     let goal = null;
     if (createdPost.goalId) {
-      goal = await axiosInstanceProfileInfo
+      goal = await axiosInstance
         .get(`/users/profile/goals/${createdPost.goalId}`)
         .then(res => res.data);
 
       if (newPost.isCompleteGoal) {
-        await axiosInstanceProfileInfo.patch(
+        await axiosInstance.patch(
           `/users/profile/goals/${newPost.goalId}`,
           { progress: 'Completed' },
           { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -65,7 +64,7 @@ export async function addPost(newPost) {
       }
 
       if (goal.progress === 'NotStarted') {
-        await axiosInstanceProfileInfo.patch(
+        await axiosInstance.patch(
           `/users/profile/goals/${createdPost.goalId}`,
           { progress: 'InProgress' },
           { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -77,7 +76,7 @@ export async function addPost(newPost) {
 
     let skills = [];
     if (createdPost.skillIds?.length > 0) {
-      const responseSkills = await axiosInstanceProfileInfo.post(`/skills/check-skills`, createdPost.skillIds);
+      const responseSkills = await axiosInstance.post(`/skills/check-skills`, createdPost.skillIds);
       skills = responseSkills.data;
     }
 
@@ -93,7 +92,7 @@ export async function addPost(newPost) {
 
 export async function updatePost(updatedPost) {
   try {
-    const response = await axiosInstancePosts.patch(
+    const response = await axiosInstance.patch(
       `/posts/${updatedPost.id}`,
       {
         content: updatedPost.content,
@@ -110,12 +109,12 @@ export async function updatePost(updatedPost) {
 
     let goal = null;
     if (updatedPostData.goalId) {
-      goal = await axiosInstanceProfileInfo
+      goal = await axiosInstance
         .get(`/users/profile/goals/${updatedPostData.goalId}`)
         .then(res => res.data);
 
       if (updatedPost.isCompleteGoal) {
-        await axiosInstanceProfileInfo.patch(
+        await axiosInstance.patch(
           `/users/profile/goals/${updatedPostData.goalId}`,
           { progress: 'Completed' },
           { headers: { Authorization: `Bearer ${accessToken}` }
@@ -127,7 +126,7 @@ export async function updatePost(updatedPost) {
 
     let skills = [];
     if (updatedPostData.skillIds.length > 0) {
-      const responseSkills = await axiosInstanceProfileInfo.post(`/skills/check-skills`, updatedPostData.skillIds, {
+      const responseSkills = await axiosInstance.post(`/skills/check-skills`, updatedPostData.skillIds, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       skills = responseSkills.data;
@@ -145,7 +144,7 @@ export async function updatePost(updatedPost) {
 
 export async function deletePost(postId) {
   try {
-    await axiosInstancePosts.delete(`/posts/${postId}`, {
+    await axiosInstance.delete(`/posts/${postId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
   } catch (error) {

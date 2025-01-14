@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '@/router';
 
-const API_URL = 'http://localhost:8081/api/auth';
+const API_URL = '/api/auth';
 
 export async function refreshTokens() {
   const refreshToken = localStorage.getItem('refreshToken');

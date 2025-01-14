@@ -81,7 +81,7 @@ export default {
       newComment: '',
       commentsCount: 0,
       showAllComments: false,
-      axiosInstance: createAxiosInstance(8083),
+      axiosInstance: createAxiosInstance(),
     };
   },
   methods: {

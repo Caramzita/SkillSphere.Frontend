@@ -82,7 +82,7 @@ export default {
             likes: 0,
             dislikes: 0,
             currentReactionId: null,
-            axiosInstanceReactions: createAxiosInstance(8083),
+            axiosInstanceReactions: createAxiosInstance(),
             accessToken: localStorage.getItem('accessToken'),
         };
     },
