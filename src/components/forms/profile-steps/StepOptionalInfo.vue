@@ -59,7 +59,7 @@ export default {
         return;
       }
 
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
       const accessToken = localStorage.getItem('accessToken');
 
       try {

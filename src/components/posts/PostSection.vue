@@ -43,7 +43,12 @@
             @mouseleave="applySkillFilter"
             class="absolute top-full mt-2 bg-white border rounded shadow-lg p-4 w-64 dark:bg-gray-800 z-50"
           >
-            <div v-for="category in categories" :key="category.id" class="flex flex-wrap gap-2">
+            <div v-if="categories.length === 0" class="flex flex-wrap gap-2">
+              <p class="text-gray-500 dark:text-gray-300 text-sm">
+                No skills available
+              </p>
+            </div>
+            <div v-else v-for="category in categories" :key="category.id" class="flex flex-wrap gap-2">
               <button
                 v-for="skill in category.skills"
                 :key="skill.id"

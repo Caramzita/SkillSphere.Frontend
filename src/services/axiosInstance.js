@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { refreshTokens } from '@/services/authService';
 
-export function createAxiosInstance(port = 8081, basePath = '/api') {
+export function createAxiosInstance(basePath = '/api') {
     const instance = axios.create({
-        baseURL: `http://localhost:${port}${basePath}`,
+        baseURL: `${basePath}`,
         headers: { 'Content-Type': 'application/json' },
     });
 

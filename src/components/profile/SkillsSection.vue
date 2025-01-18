@@ -56,6 +56,9 @@ import AddSkillsModal from './modals/AddSkillsModal.vue';
 import { createAxiosInstance } from "@/services/axiosInstance";
 import { handleError } from '@/services/errorHandler';
 
+const axiosInstance = createAxiosInstance();
+const accessToken = localStorage.getItem('accessToken');
+
 export default {
     components: {
       AddSkillsModal
@@ -91,8 +94,6 @@ export default {
             this.isVisible = !this.isVisible;
         },
         async saveSkills(selectedSkills) {
-            const axiosInstance = createAxiosInstance(8084);
-            const accessToken = localStorage.getItem('accessToken');
 
             try {
                 const payload = {
@@ -115,9 +116,6 @@ export default {
             }
         },
         async deleteSkill(id) {
-            const axiosInstance = createAxiosInstance(8084);
-            const accessToken = localStorage.getItem('accessToken');
-
             try {
                 const response = await axiosInstance.delete(`/users/profile/skills/${id}`, {
                     headers: { 

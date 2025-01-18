@@ -56,6 +56,8 @@ import { createAxiosInstance } from '@/services/axiosInstance';
 import CommentCard from './CommentCard.vue';
 import { trimAndFormatContent } from '@/services/textFormatter';
 
+const axiosInstance = createAxiosInstance();
+
 export default {
   name: 'PostComments',
   props: {
@@ -81,7 +83,6 @@ export default {
       newComment: '',
       commentsCount: 0,
       showAllComments: false,
-      axiosInstance: createAxiosInstance(8083),
     };
   },
   methods: {
@@ -92,7 +93,7 @@ export default {
       },
       async fetchComments() {
           try {
-          const { data } = await this.axiosInstance.get(`/interactions/posts/${this.postId}/comments`);
+          const { data } = await axiosInstance.get(`/interactions/posts/${this.postId}/comments`);
           this.comments = data;
           this.commentsCount = data.length;
   
@@ -111,7 +112,7 @@ export default {
           this.newComment = trimAndFormatContent(this.newComment);
   
           try {
-          const { data } = await this.axiosInstance.post(
+          const { data } = await axiosInstance.post(
               `/interactions/posts/${this.postId}/comments`,
               { content: this.newComment }
           );

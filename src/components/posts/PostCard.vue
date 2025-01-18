@@ -108,6 +108,9 @@ export default {
   },
   computed: {
     paragraphs() {
+      if (!this.postData || !this.postData.content || typeof this.postData.content !== 'string') {
+        return [];
+      }
       return this.postData.content.split('\n').filter(line => line.trim().length > 0);
     },
   },

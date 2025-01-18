@@ -79,6 +79,9 @@ import { createAxiosInstance } from "@/services/axiosInstance";
 import { handleError } from '@/services/errorHandler';
 import ConfirmModal from "../ConfirmModal.vue";
 
+const axiosInstance = createAxiosInstance();
+const accessToken = localStorage.getItem("accessToken");
+
 export default {
   components: {
     AddHistoryModal,
@@ -121,9 +124,6 @@ export default {
       return new Intl.DateTimeFormat("en-US", options).format(new Date(dateString));
     },
     async addHistory(newHistory) {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axiosInstance.post(
           `/users/profile/histories`, newHistory,
@@ -146,9 +146,6 @@ export default {
     },
     async deleteHistory(id){
       this.showDeleteModal = false;
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axiosInstance.delete(
           `/users/profile/histories/${id}`,

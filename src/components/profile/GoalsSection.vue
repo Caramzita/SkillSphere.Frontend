@@ -94,6 +94,9 @@ import { createAxiosInstance } from "@/services/axiosInstance";
 import { handleError } from '@/services/errorHandler';
 import ConfirmModal from "../ConfirmModal.vue";
 
+const axiosInstance = createAxiosInstance();
+const accessToken = localStorage.getItem("accessToken");
+
 export default {
   components: {
     AddGoalModal,
@@ -138,9 +141,6 @@ export default {
       this.errors = [];
     },
     async saveGoal(newGoal) {
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axiosInstance.post(
           `/users/profile/goals`, newGoal,
@@ -163,9 +163,6 @@ export default {
     },
     async deleteGoal(id){
       this.showDeleteModal = false;
-      const axiosInstance = createAxiosInstance(8084);
-      const accessToken = localStorage.getItem("accessToken");
-
       try {
         const response = await axiosInstance.delete(
           `/users/profile/goals/${id}`,

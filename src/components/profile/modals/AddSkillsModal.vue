@@ -29,6 +29,11 @@
         </button>
       </div>
       <div class="p-4 md:p-5">
+        <div v-if="categories.length === 0" class="mb-8">
+          <p class="text-gray-500 dark:text-gray-300 text-sm">
+            No skills available
+          </p>
+        </div>
         <div v-for="category in categories" :key="category.id" class="mb-8">
             <h3 class="text-lg font-semibold mb-2 ml-1 dark:text-white">{{ category.name }}</h3>
 

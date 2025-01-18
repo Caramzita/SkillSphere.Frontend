@@ -74,7 +74,7 @@ export default {
       }
     },
     async GetAllProfiles() {
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
 
       try {
         const response = await axiosInstance.get('/users/profiles');

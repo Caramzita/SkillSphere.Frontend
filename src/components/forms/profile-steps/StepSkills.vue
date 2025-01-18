@@ -73,7 +73,7 @@ export default {
         return;
       }
 
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
       const accessToken = localStorage.getItem('accessToken');
 
       try {
@@ -96,7 +96,7 @@ export default {
       }
     },
     async loadCategoriesAndSkills() {
-      const axiosInstance = createAxiosInstance(8084);
+      const axiosInstance = createAxiosInstance();
 
       try {
         const response = await axiosInstance.get("/categories");
