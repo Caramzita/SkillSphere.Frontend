@@ -29,7 +29,7 @@
 
       <div class="flex justify-between mt-6">
         <button
-          class="px-5 py-2 text-sm font-medium text-gray-800 dark:text-white bg-gray-200 dark:bg-gray-700 rounded-lg 
+          class="invisible px-5 py-2 text-sm font-medium text-gray-800 dark:text-white bg-gray-200 dark:bg-gray-700 rounded-lg 
                  hover:bg-gray-300 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-gray-700 
                  dark:hover:bg-gray-600 dark:focus:ring-gray-800"
           @click="previousStep"
@@ -53,6 +53,7 @@
 <script>
 import { createAxiosInstance } from '@/services/axiosInstance';
 import { handleError } from '@/services/errorHandler';
+import { addProgrammingCategoryWithSkills } from '@/services/addSkills';
 
 export default {
   emits: ["next", "previous"],
@@ -63,7 +64,8 @@ export default {
       errors: [],
     };
   },
-  async mounted() {
+  async created() {
+    await addProgrammingCategoryWithSkills();
     await this.loadCategoriesAndSkills();
   },
   methods: {
